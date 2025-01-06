@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -465,6 +465,9 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
+
+      -- goto definition on decompiled sources
+      { 'Hoffs/omnisharp-extended-lsp.nvim' },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -509,23 +512,6 @@ require('lazy').setup({
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          -- Jump to the definition of the word under your cursor.
-          --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-
-          -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-          -- Jump to the implementation of the word under your cursor.
-          --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-          -- Jump to the type of the word under your cursor.
-          --  Useful when you're not sure what type a variable is and you want to see
-          --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
           map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
@@ -545,6 +531,40 @@ require('lazy').setup({
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          -- Custom Omnisharp-Extended keymaps
+          if client.name == 'omnisharp' then
+            map('gr', function()
+              require('omnisharp_extended').telescope_lsp_references()
+            end, '[G]oto [R]eferences (Omnisharp)')
+            map('gd', function()
+              require('omnisharp_extended').telescope_lsp_definition { jump_type = 'vsplit' }
+            end, '[G]oto [D]efinition (Omnisharp)')
+            map('<leader>D', function()
+              require('omnisharp_extended').telescope_lsp_type_definition()
+            end, 'Type [D]efinition (Omnisharp)')
+            map('gi', function()
+              require('omnisharp_extended').telescope_lsp_implementation()
+            end, '[G]oto [I]mplementation (Omnisharp)')
+          else
+            -- Jump to the definition of the word under your cursor.
+            --  This is where a variable was first declared, or where a function is defined, etc.
+            --  To jump back, press <C-t>.
+            map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+
+            -- Find references for the word under your cursor.
+            map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+
+            -- Jump to the implementation of the word under your cursor.
+            --  Useful when your language has ways of declaring types without an actual implementation.
+            map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
+            -- Jump to the type of the word under your cursor.
+            --  Useful when you're not sure what type a variable is and you want to see
+            --  the definition of its *type*, not where it was *defined*.
+            map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+          end
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -626,7 +646,17 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        omnisharp = {
+          handlers = {
+            ['textDocument/definition'] = require('omnisharp_extended').handler,
+          },
 
+          enable_roslyn_analysers = true,
+          enable_import_completion = true,
+          organize_imports_on_format = true,
+          enable_decompilation_support = true,
+          filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -930,14 +960,14 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
