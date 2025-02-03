@@ -657,6 +657,7 @@ require('lazy').setup({
           enable_decompilation_support = true,
           filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
         },
+        terraformls = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
