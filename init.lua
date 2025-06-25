@@ -657,7 +657,6 @@ require('lazy').setup({
           enable_decompilation_support = true,
           filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
         },
-        terraformls = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -672,6 +671,11 @@ require('lazy').setup({
             },
           },
         },
+        ['csharp-language-server'] = {},
+        csharpier = {},
+        prettier = {},
+        stylua = {},
+        ts_ls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -820,7 +824,7 @@ require('lazy').setup({
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
           ['<CR>'] = cmp.mapping.confirm { select = true },
-          ['<Tab>'] = cmp.mapping.select_next_item(),
+          --['<Tab>'] = cmp.mapping.select_next_item(),
           --['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
@@ -928,7 +932,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'c_sharp' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
