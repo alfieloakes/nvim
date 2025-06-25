@@ -76,6 +76,13 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+    {
+      '<leader>dt',
+      function()
+        require('neotest').run.run { strategy = 'dap' }
+      end,
+      desc = 'Debug: Run test',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -135,6 +142,51 @@ return {
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
+
+    -- C#
+    dap.adapters.coreclr = {
+      type = 'executable',
+      command = 'netcoredbg',
+      args = { '--interpreter=vscode' },
+    }
+
+    dap.adapters.netcoredbg = {
+      type = 'executable',
+      command = 'netcoredbg',
+      args = { '--interpreter=vscode' },
+    }
+
+    dap.configurations.cs = {
+      {
+        type = 'coreclr',
+        name = 'launch - netcoredbg',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to dll: ', vim.fn.getcwd() .. '/bin/Debug/', 'file')
+        end,
+
+        -- justMyCode = false,
+        -- stopAtEntry = false,
+        -- -- program = function()
+        -- --   -- todo: request input from ui
+        -- --   return "/path/to/your.dll"
+        -- -- end,
+        -- env = {
+        --   ASPNETCORE_ENVIRONMENT = function()
+        --     -- todo: request input from ui
+        --     return "Development"
+        --   end,
+        --   ASPNETCORE_URLS = function()
+        --     -- todo: request input from ui
+        --     return "http://localhost:5050"
+        --   end,
+        -- },
+        -- cwd = function()
+        --   -- todo: request input from ui
+        --   return vim.fn.getcwd()
+        -- end,
+      },
+    }
 
     -- Install golang specific config
     require('dap-go').setup {
