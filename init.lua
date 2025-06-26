@@ -465,9 +465,6 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
-
-      -- goto definition on decompiled sources
-      { 'Hoffs/omnisharp-extended-lsp.nvim' },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -532,39 +529,22 @@ require('lazy').setup({
           --  For example, in C this would take you to the header.
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          -- Custom Omnisharp-Extended keymaps
-          if client.name == 'omnisharp' then
-            map('gr', function()
-              require('omnisharp_extended').telescope_lsp_references()
-            end, '[G]oto [R]eferences (Omnisharp)')
-            map('gd', function()
-              require('omnisharp_extended').telescope_lsp_definition { jump_type = 'vsplit' }
-            end, '[G]oto [D]efinition (Omnisharp)')
-            map('<leader>D', function()
-              require('omnisharp_extended').telescope_lsp_type_definition()
-            end, 'Type [D]efinition (Omnisharp)')
-            map('gi', function()
-              require('omnisharp_extended').telescope_lsp_implementation()
-            end, '[G]oto [I]mplementation (Omnisharp)')
-          else
-            -- Jump to the definition of the word under your cursor.
-            --  This is where a variable was first declared, or where a function is defined, etc.
-            --  To jump back, press <C-t>.
-            map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          -- Jump to the definition of the word under your cursor.
+          --  This is where a variable was first declared, or where a function is defined, etc.
+          --  To jump back, press <C-t>.
+          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
-            -- Find references for the word under your cursor.
-            map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          -- Find references for the word under your cursor.
+          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
-            -- Jump to the implementation of the word under your cursor.
-            --  Useful when your language has ways of declaring types without an actual implementation.
-            map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          -- Jump to the implementation of the word under your cursor.
+          --  Useful when your language has ways of declaring types without an actual implementation.
+          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
 
-            -- Jump to the type of the word under your cursor.
-            --  Useful when you're not sure what type a variable is and you want to see
-            --  the definition of its *type*, not where it was *defined*.
-            map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-          end
+          -- Jump to the type of the word under your cursor.
+          --  Useful when you're not sure what type a variable is and you want to see
+          --  the definition of its *type*, not where it was *defined*.
+          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -646,17 +626,6 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-        omnisharp = {
-          handlers = {
-            ['textDocument/definition'] = require('omnisharp_extended').handler,
-          },
-
-          enable_roslyn_analysers = true,
-          enable_import_completion = true,
-          organize_imports_on_format = true,
-          enable_decompilation_support = true,
-          filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
-        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
