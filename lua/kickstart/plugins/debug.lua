@@ -146,13 +146,13 @@ return {
     -- C#
     dap.adapters.coreclr = {
       type = 'executable',
-      command = 'netcoredbg',
+      command = '/Users/alfieloakes/Dev/debuggers/netcoredbg/netcoredbg',
       args = { '--interpreter=vscode' },
     }
 
     dap.adapters.netcoredbg = {
       type = 'executable',
-      command = 'netcoredbg',
+      command = '/Users/alfieloakes/Dev/debuggers/netcoredbg/netcoredbg',
       args = { '--interpreter=vscode' },
     }
 
